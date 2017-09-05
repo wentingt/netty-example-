@@ -1,40 +1,20 @@
-# Netty Discard Server Example
+wentingt
 
-A minimal maven project using [Netty][1].
-This [sample code][2] is from taken from the netty distribution.
+rate (unit: B / second)
 
-[1]: http://www.jboss.org/netty
-[2]: http://docs.jboss.org/netty/3.2/xref/org/jboss/netty/example/discard/package-summary.html
+RateLimiter.create(rate / k)			NA * rate / CHUNKSIZE		
+	(unit: permits / second)
 
-## Archetypes
+RateLimiter.acquire(CHUNKSIZE / k) -- 1		NA
+	1 / k (unit: permits / B)				
 
-To create an archetype from this project you can use:
+total number of acquire = fileLength / CHUNKSIZE -- need to be small
 
-    mvn archetype:create-from-project
-
-To install the archetype in your local maven repo use:
-
-    cd target/generated-sources/archetype/
-    mvn install
-
-To create a project from your archetype use:
-
-    mvn archetype:generate -DarchetypeCatalog=local
-
-and select yours.
+Thus we need to make CHUNKSIZE big 
+- it cannot be too big because too coarse grained)
+- it cannot be too big because channel separate it.
 
 
-#wentingt
+FileRegion: near 1GB
 
-SSL does not work. No need to consider.
-
-Test with single client: good.
-
-Test with single client: multiple files. 
-	change chunkhandler. no need. bottleneck 1G / 8
-
-Test with multi-client: good. different channel.
-
-read Hadoop: cache pool? Does not matter.
-
-To do: Hadoop test.
+ChunkedFile: Degrade.
