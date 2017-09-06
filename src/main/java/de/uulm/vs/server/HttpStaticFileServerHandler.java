@@ -415,7 +415,8 @@ for (int k = 0; k < num; ++k) {
 	}
 	@Override
 	public Object nextChunk() throws Exception {
-			 rateLimite.acquire(CHUNKSIZE);
+
+    	    rateLimite.acquire(CHUNKSIZE);
 		counte += 1;
 //		System.out.println("nextChunk");
 		return super.nextChunk();
