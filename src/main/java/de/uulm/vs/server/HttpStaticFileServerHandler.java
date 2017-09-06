@@ -130,11 +130,10 @@ private static final Logger logger = Logger.getLogger(
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     public static final int HTTP_CACHE_SECONDS = 60;
 
-    public static final int CHUNKSIZE = 1024 * 64; // 1kB
-
-     double permitsPerSecond = 1024 * 1024 * 1024 / 8; // rate (byte / second)
-      private final RateLimiter rateLimite = RateLimiter.create(permitsPerSecond);
-      private final RateLimiter rateLimiter = RateLimiter.create(permitsPerSecond);
+    public static final int CHUNKSIZE = 1024 * 64; // 65536 // B
+     long RATE  = 1024 * 1024 * 1024 / 1024; // B / s
+     int NA = 1;
+      private final RateLimiter rateLimiter = RateLimiter.create(RATE / CHUNKSIZE * NA); // 64 / 1024 * 1000
       // time (second) to send a chunk (CHUNKSIZE) = CHUNKSIZE / permitsPerSecond
 
       public long T, TT, TTT, TTTT;
@@ -145,6 +144,9 @@ private static final Logger logger = Logger.getLogger(
 	public int headerLength = 1000;
 	public long fileLength = 1024 * 1024 * 1024;
 	public int num = 5;
+
+	public long t_prev, t_now;
+
 
 	@Override
 	      public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
@@ -239,8 +241,8 @@ for (int k = 0; k < num; ++k) {
         fileLength = raf.length();
 
         // Write the content.
-        if (ch.getPipeline().get(SslHandler.class) != null) {
-//        if (ch.getPipeline().get(SslHandler.class) == null) {
+ //       if (ch.getPipeline().get(SslHandler.class) != null) {
+       if (ch.getPipeline().get(SslHandler.class) == null) {
             // Cannot use zero-copy with HTTPS.
 	System.out.println("ChunkedFile:");
 	T = System.currentTimeMillis();
@@ -415,10 +417,13 @@ for (int k = 0; k < num; ++k) {
 	}
 	@Override
 	public Object nextChunk() throws Exception {
-
-    	    rateLimite.acquire(CHUNKSIZE);
+        t_now = System.currentTimeMillis();
+    	    rateLimiter.acquire(NA);
 		counte += 1;
-//		System.out.println("nextChunk");
+		//System.out.println(t_now);
+		//System.out.println(t_prev);
+		System.out.println(t_now - t_prev);
+		t_prev = t_now;
 		return super.nextChunk();
 	}
 
@@ -456,7 +461,7 @@ for (int k = 0; k < num; ++k) {
 		long trans = actualCount;
 		long readSize;
 		while(trans > 0L) {
-			rateLimiter.acquire(CHUNKSIZE);
+			rateLimiter.acquire(NA);
 			counter += 1;
 			readSize = fileChannel.transferTo(this.position + position, CHUNKSIZE, target);
 			trans -= readSize;
@@ -494,7 +499,7 @@ for (int k = 0; k < num; ++k) {
 				//rateLimiter.acquire(trans);
 			}
 
-			rateLimiter.acquire(CHUNKSIZE);
+			rateLimiter.acquire(NA);
 			counter += 1;
 
 			while(byteBuffer.hasRemaining()) {
