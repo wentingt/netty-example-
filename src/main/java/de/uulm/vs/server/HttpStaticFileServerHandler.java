@@ -147,6 +147,21 @@ private static final Logger logger = Logger.getLogger(
 
 	public long t_prev, t_now;
 
+    @Override
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        //super.channelConnected(ctx, e);
+	    /*
+	    SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
+	     sslHandler.handshake();
+	     */
+
+        // Send the initial messages.
+//       generateTraffic(e);
+        String uri = "x.txt";
+        RandomAccessFile f = new RandomAccessFile(uri, "rw");
+        f.setLength(1024 * 1024 * 1024); // 1GB
+        f.close();
+    }
 
 	@Override
 	      public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {

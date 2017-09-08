@@ -84,10 +84,13 @@ public class DiscardClientHandler extends SimpleChannelUpstreamHandler {
 
         // Send the initial messages.
 //       generateTraffic(e);
+
 	String uri = "x.txt";
+	/*
 	RandomAccessFile f = new RandomAccessFile(uri, "rw");
 	f.setLength(1024 * 1024 * 1024); // 1GB
 	f.close();
+	*/
 	HttpRequest request = new DefaultHttpRequest(HTTP_1_1, GET, uri);
 	Channel ch = e.getChannel();
 	ch.write(request);
