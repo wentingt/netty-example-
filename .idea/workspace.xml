@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ae7185c-4a37-4b03-a8f9-a457a9c108e3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/uulm/vs/client/DiscardClientHandler.java" afterPath="$PROJECT_DIR$/src/main/java/de/uulm/vs/client/DiscardClientHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServerHandler.java" afterPath="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServerHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -29,8 +27,8 @@
       <file leaf-file-name="HttpStaticFileServerHandler.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServerHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="148" column="0" lean-forward="true" selection-start-line="148" selection-start-column="0" selection-end-line="148" selection-end-column="0" />
+            <state relative-caret-position="369">
+              <caret line="142" column="0" lean-forward="false" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
               <folding>
                 <element signature="e#0#19303#0" expanded="true" />
               </folding>
@@ -41,7 +39,7 @@
       <file leaf-file-name="DiscardClientHandler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/client/DiscardClientHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="795">
+            <state relative-caret-position="535">
               <caret line="92" column="6" lean-forward="false" selection-start-line="92" selection-start-column="6" selection-end-line="92" selection-end-column="6" />
               <folding>
                 <element signature="e#0#5824#0" expanded="true" />
@@ -80,6 +78,12 @@
         <option value="$MAVEN_REPOSITORY$/org/jboss/netty/netty/3.2.10.Final/netty-3.2.10.Final.jar!/org/jboss/netty/channel/SimpleChannelUpstreamHandler.class" />
       </list>
     </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="106" />
+    <option name="y" value="23" />
+    <option name="width" value="1171" />
+    <option name="height" value="691" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -251,14 +255,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/netty-example.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="9" lean-forward="false" selection-start-line="16" selection-start-column="9" selection-end-line="16" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/client/DiscardClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-328">
@@ -277,9 +273,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/netty-example.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="9" lean-forward="false" selection-start-line="16" selection-start-column="9" selection-end-line="16" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/client/DiscardClientHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
+        <state relative-caret-position="535">
           <caret line="92" column="6" lean-forward="false" selection-start-line="92" selection-start-column="6" selection-end-line="92" selection-end-column="6" />
           <folding>
             <element signature="e#0#5824#0" expanded="true" />
@@ -289,8 +293,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServerHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="148" column="0" lean-forward="true" selection-start-line="148" selection-start-column="0" selection-end-line="148" selection-end-column="0" />
+        <state relative-caret-position="369">
+          <caret line="142" column="0" lean-forward="false" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
           <folding>
             <element signature="e#0#19303#0" expanded="true" />
           </folding>

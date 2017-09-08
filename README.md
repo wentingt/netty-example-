@@ -18,3 +18,7 @@ Thus we need to make CHUNKSIZE big
 FileRegion: near 1GB
 
 ChunkedFile: Degrade.
+
+Tested on max_clemson
+iperf: 2Gb 
+FileRegion pass.
