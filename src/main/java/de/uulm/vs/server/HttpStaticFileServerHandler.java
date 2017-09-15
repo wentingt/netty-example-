@@ -122,6 +122,23 @@ import org.jboss.netty.handler.ssl.SslHandler;
  * </pre>
  */
 public class HttpStaticFileServerHandler extends SimpleChannelUpstreamHandler {
+    public static final int CHUNKSIZE = 1024 * 64; // 65536 // B
+    long RATE  = 1024 * 1024 * 1024; // B / s
+    int NA = 1; // acquire(NA)
+
+    //private RateLimiter rateLimiter = RateLimiter.create(RATE / CHUNKSIZE * NA);
+
+    // time (second) to send a chunk (CHUNKSIZE) = CHUNKSIZE / permitsPerSecond
+
+    public long T, TT, TTT, TTTT;
+
+    public int headerLength = 1000;
+    public long fileLength = 1024 * 1024 * 1024;
+    public int num = 5;
+
+
+    private RateLimiter rateLimiter;
+
 	//static final ChannelGroup channels = new DefaultChannelGroup();
 private static final Logger logger = Logger.getLogger(
 		              HttpStaticFileServerHandler.class.getName());
@@ -129,21 +146,6 @@ private static final Logger logger = Logger.getLogger(
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     public static final int HTTP_CACHE_SECONDS = 60;
-
-    public static final int CHUNKSIZE = 1024 * 64; // 65536 // B
-     long RATE  = 1024 * 1024 * 1024; // B / s
-     int NA = 1;
-      private final RateLimiter rateLimiter = RateLimiter.create(RATE / CHUNKSIZE * NA);
-      // time (second) to send a chunk (CHUNKSIZE) = CHUNKSIZE / permitsPerSecond
-
-      public long T, TT, TTT, TTTT;
-
-	public int counte = 0;
-	public int counter = 0;
-
-	public int headerLength = 1000;
-	public long fileLength = 1024 * 1024 * 1024;
-	public int num = 20;
 
 	public long t_prev, t_now;
 
@@ -230,6 +232,8 @@ private static final Logger logger = Logger.getLogger(
 	System.out.println("HttpResponse:");
 	System.out.println(response);
 
+        rateLimiter = RateLimiter.create(RATE / CHUNKSIZE);
+
 for (int k = 0; k < num; ++k) {
 
 	byte[] contents = new byte[headerLength];
@@ -261,7 +265,7 @@ for (int k = 0; k < num; ++k) {
             // Cannot use zero-copy with HTTPS.
 	System.out.println("ChunkedFile:");
 	T = System.currentTimeMillis();
-	ChunkedFile cf = new myChunkedFile(raf, 0, fileLength, CHUNKSIZE);
+	ChunkedFile cf = new ChunkedFile(raf, 0, fileLength, CHUNKSIZE);
         ChannelFuture writeFuture = ch.write(cf);
 
     writeFuture.addListener(new ChannelFutureListener() {
@@ -280,8 +284,10 @@ for (int k = 0; k < num; ++k) {
     // No encryption - use zero-copy.
 	System.out.println("FileRegion:");
 	TTT = System.currentTimeMillis();
+	assert(rateLimiter != null);
+
             final FileRegion region =
-                new myFileRegion(raf.getChannel(), 0, fileLength);
+                new FadvisedFileRegion(raf.getChannel(), 0, fileLength, CHUNKSIZE, rateLimiter);
         ChannelFuture wF = ch.write(region);
             wF.addListener(new ChannelFutureListener() {
                 public void operationComplete(ChannelFuture future) {
@@ -423,121 +429,4 @@ for (int k = 0; k < num; ++k) {
         MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
         response.setHeader(CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
     }
-     ////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////
-    class myChunkedFile extends ChunkedFile {
-    	public myChunkedFile(RandomAccessFile file, long position, long count,
-			      int chunkSize) throws IOException {
-		super(file, position, count, chunkSize);
-	}
-	@Override
-	public Object nextChunk() throws Exception {
-        t_now = System.currentTimeMillis();
-    	    rateLimiter.acquire(NA);
-		counte += 1;
-		//System.out.println(t_now);
-		//System.out.println(t_prev);
-		//System.out.println(t_now - t_prev);
-		t_prev = t_now;
-		return super.nextChunk();
-	}
-
-    }
-   ////////////////////////
-    class myFileRegion extends DefaultFileRegion {
-		      private final long count;
-		        private final long position;
-			      private final FileChannel fileChannel;
-
- 	public myFileRegion(FileChannel file, long position, long count) {
-		super(file, position, count);
-		this.fileChannel = file;
-		this.position = position;
-		this.count = count;
-	}   
-
-	@Override
-	public long transferTo(WritableByteChannel target, long position)
-		throws IOException {
-		return transferToZero(target, position);
-		//return transferToNonZ(target, position);
-	}
-	public long transferToZero(WritableByteChannel target, long position)
-		throws IOException {
-		long actualCount = this.count - position;
-		if (actualCount < 0 || position < 0) {
-			throw new IllegalArgumentException(
-					  "position out of range: " + position +
-						    " (expected: 0 - " + (this.count - 1) + ')');
-		}
-		if (actualCount == 0) {
-			      return 0L;
-			          }
-		long trans = actualCount;
-		long readSize;
-		while(trans > 0L) {
-			rateLimiter.acquire(NA);
-			counter += 1;
-			readSize = fileChannel.transferTo(this.position + position, CHUNKSIZE, target);
-			trans -= readSize;
-			position += readSize;
-		}
-	  	return actualCount - trans;
-	}
-	public long transferToNonZ(WritableByteChannel target, long position)
-		throws IOException {
-//		return super.transferTo(target, position);
-		long actualCount = this.count - position;
-		if (actualCount < 0 || position < 0) {
-			throw new IllegalArgumentException(
-					  "position out of range: " + position +
-						    " (expected: 0 - " + (this.count - 1) + ')');
-		}
-		if (actualCount == 0) {
-			      return 0L;
-			          }
-		long trans = actualCount;
-		int readSize;
-		ByteBuffer byteBuffer = ByteBuffer.allocate(CHUNKSIZE);
-		while(trans > 0L &&
-			(readSize = fileChannel.read(byteBuffer, this.position+position)) > 0) {
-			if(readSize < trans) {
-				trans -= readSize;
-				position += readSize;
-				byteBuffer.flip(); //
-				//rateLimiter.acquire(readSize);
-		      	} else {
-		 		byteBuffer.limit((int)trans);
-				byteBuffer.position(0);
-				position += trans; 
-				trans = 0;
-				//rateLimiter.acquire(trans);
-			}
-
-			rateLimiter.acquire(NA);
-			counter += 1;
-
-			while(byteBuffer.hasRemaining()) {
-				target.write(byteBuffer);
-			}
-		      	byteBuffer.clear();
-	 	}
-	  	return actualCount - trans;
-	}
-    }
-    ////////////////////////////////////////////////////////////////////////////////
-    //
-    /*
-    @Override
-        public void channelConnected(
-			            ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-
-		        // Get the SslHandler in the current pipeline.
-			//         // We added it in SecureChatPipelineFactory.
-			                 final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
-			
-		                         // Get notified when SSL handshake is done.
-		                               ChannelFuture handshakeFuture = sslHandler.handshake();
-		                                         }
-							 */ 
 }
