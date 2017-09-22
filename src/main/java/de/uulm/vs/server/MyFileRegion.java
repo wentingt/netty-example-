@@ -1,4 +1,3 @@
-
 package de.uulm.vs.server;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -29,13 +28,13 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
 
- import java.util.logging.Level;
-  import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jboss.netty.channel.ChannelEvent;
- import org.jboss.netty.channel.ChannelHandlerContext;
-  import org.jboss.netty.channel.ChannelState;
-   import org.jboss.netty.channel.ChannelStateEvent;
-    import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelState;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
 
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
@@ -60,30 +59,34 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 import java.lang.Thread;
 
 
-class FadvisedFileRegion extends DefaultFileRegion {
+public class MyFileRegion extends DefaultFileRegion {
     private final long count;
     private final long position;
     private final FileChannel fileChannel;
     private RateLimiter rateLimiter;
+    private ShuffleInfo shuffleInfo;
 
     private int CHUNKSIZE;
 
-    public FadvisedFileRegion(FileChannel file, long position, long count,
-                        int CHUNKSIZE,
-                        RateLimiter rateLimiter) {
+    public MyFileRegion(FileChannel file, long position, long count,
+                              int CHUNKSIZE,
+                              RateLimiter rateLimiter,
+                        ShuffleInfo shuffleInfo) {
         super(file, position, count);
         this.fileChannel = file;
         this.position = position;
         this.count = count;
 
         this.rateLimiter = rateLimiter;
-
+        this.shuffleInfo = shuffleInfo;
         this.CHUNKSIZE = CHUNKSIZE;
     }
 
     @Override
     public long transferTo(WritableByteChannel target, long position)
             throws IOException {
+        //return super.transferTo(target, position);
+
         //return transferToZero(target, position);
         System.out.println("Custom");
         return transferToNonZ(target, position);
@@ -111,6 +114,7 @@ class FadvisedFileRegion extends DefaultFileRegion {
     }
     public long transferToNonZ(WritableByteChannel target, long position)
             throws IOException {
+        //---------------->
 //		return super.transferTo(target, position);
         long actualCount = this.count - position;
         if (actualCount < 0 || position < 0) {
@@ -139,12 +143,21 @@ class FadvisedFileRegion extends DefaultFileRegion {
                 //rateLimiter.acquire(trans);
             }
 
+            System.err.println(rateLimiter.getRate());
+
             rateLimiter.acquire();
+            rateLimiter.setRate((double) shuffleInfo.shuffleRate / (double) CHUNKSIZE);
 
             while(byteBuffer.hasRemaining()) {
                 target.write(byteBuffer);
             }
             byteBuffer.clear();
+
+            // boolean setProgress(long amount, long current, long total)
+            if (shuffleInfo.shuffleSize > CHUNKSIZE)
+                shuffleInfo.shuffleSize -= CHUNKSIZE;
+            else shuffleInfo.shuffleSize = 0;
+
         }
         return actualCount - trans;
     }

@@ -1,15 +1,16 @@
-Error: A JNI error has occurred, please check your installation and try again
-Exception in thread "main" java.lang.NoClassDefFoundError: org/jboss/netty/channel/ChannelFactory
-	at java.lang.Class.getDeclaredMethods0(Native Method)
-	at java.lang.Class.privateGetDeclaredMethods(Class.java:2701)
-	at java.lang.Class.privateGetMethodRecursive(Class.java:3048)
-	at java.lang.Class.getMethod0(Class.java:3018)
-	at java.lang.Class.getMethod(Class.java:1784)
-	at sun.launcher.LauncherHelper.validateMainClass(LauncherHelper.java:544)
-	at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:526)
-Caused by: java.lang.ClassNotFoundException: org.jboss.netty.channel.ChannelFactory
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:335)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 7 more
+Sep 21, 2017 4:23:36 PM de.uulm.vs.client.DiscardClientHandler handleUpstream
+INFO: [id: 0x2798e6f8] OPEN
+Sep 21, 2017 4:23:36 PM de.uulm.vs.client.DiscardClientHandler handleUpstream
+INFO: [id: 0x2798e6f8] CLOSED
+Sep 21, 2017 4:23:36 PM de.uulm.vs.client.DiscardClientHandler exceptionCaught
+WARNING: Unexpected exception from downstream.
+java.net.ConnectException: Connection refused
+	at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+	at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:717)
+	at org.jboss.netty.channel.socket.nio.NioClientSocketPipelineSink$Boss.connect(NioClientSocketPipelineSink.java:401)
+	at org.jboss.netty.channel.socket.nio.NioClientSocketPipelineSink$Boss.processSelectedKeys(NioClientSocketPipelineSink.java:370)
+	at org.jboss.netty.channel.socket.nio.NioClientSocketPipelineSink$Boss.run(NioClientSocketPipelineSink.java:292)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+

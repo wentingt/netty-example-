@@ -40,6 +40,8 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.stream.ChunkedFile;
 import org.jboss.netty.util.CharsetUtil;
+
+import java.net.InetSocketAddress;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
@@ -121,7 +123,15 @@ import org.jboss.netty.handler.ssl.SslHandler;
  *
  * </pre>
  */
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class HttpStaticFileServerHandler extends SimpleChannelUpstreamHandler {
+    private final Map<ShuffleId, ShuffleInfo> shuffleInfoMap;
+    public HttpStaticFileServerHandler(Map<ShuffleId, ShuffleInfo> shuffleInfoMap) {
+        this.shuffleInfoMap = shuffleInfoMap;
+    }
+
     public static final int CHUNKSIZE = 1024 * 64; // 65536 // B
     long RATE  = 1024 * 1024 * 1024; // B / s
     int NA = 1; // acquire(NA)
@@ -140,7 +150,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelUpstreamHandler {
     private RateLimiter rateLimiter;
 
 	//static final ChannelGroup channels = new DefaultChannelGroup();
-private static final Logger logger = Logger.getLogger(
+    private static final Logger logger = Logger.getLogger(
 		              HttpStaticFileServerHandler.class.getName());
 
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
@@ -221,7 +231,8 @@ private static final Logger logger = Logger.getLogger(
 
 
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-        setContentLength(response, num * (headerLength + fileLength));
+        long contentLength = num * (headerLength + fileLength);
+        setContentLength(response, contentLength);
         setContentTypeHeader(response, file);
         setDateAndCacheHeaders(response, file);
 
@@ -232,9 +243,22 @@ private static final Logger logger = Logger.getLogger(
 	System.out.println("HttpResponse:");
 	System.out.println(response);
 
-        rateLimiter = RateLimiter.create(RATE / CHUNKSIZE);
+	    ShuffleId shuffleId = new ShuffleId();
+	    ShuffleInfo shuffleInfo = new ShuffleInfo();
+	    InetSocketAddress mapAddr = (InetSocketAddress) ch.getLocalAddress();
+	    InetSocketAddress reduceAddr = (InetSocketAddress) ch.getRemoteAddress();
+	    shuffleInfo.mapHostName = mapAddr.getHostName();
+	    shuffleInfo.reduceHostName = reduceAddr.getHostName();
+	    shuffleInfo.shuffleSize = contentLength;
+        this.shuffleInfoMap.put(shuffleId, shuffleInfo);
+
+        rateLimiter = RateLimiter.create((double) shuffleInfo.shuffleRate / (double) CHUNKSIZE);
 
 for (int k = 0; k < num; ++k) {
+    for (Map.Entry<ShuffleId, ShuffleInfo> entry: shuffleInfoMap.entrySet()) {
+        entry.getKey().print();
+        entry.getValue().print();
+    }
 
 	byte[] contents = new byte[headerLength];
 	for (int i = 0; i < contents.length; ++i) {
@@ -280,16 +304,25 @@ for (int k = 0; k < num; ++k) {
             });
 
        } else {
-
+//----------------------->
     // No encryption - use zero-copy.
 	System.out.println("FileRegion:");
 	TTT = System.currentTimeMillis();
 	assert(rateLimiter != null);
-
             final FileRegion region =
-                new FadvisedFileRegion(raf.getChannel(), 0, fileLength, CHUNKSIZE, rateLimiter);
+                new MyFileRegion(raf.getChannel(), 0, fileLength, CHUNKSIZE,
+                        rateLimiter, shuffleInfo);
+
         ChannelFuture wF = ch.write(region);
-            wF.addListener(new ChannelFutureListener() {
+            wF.addListener(new ChannelFutureProgressListener() {
+                @Override
+                public void operationProgressed(ChannelFuture future,
+                long amount, long current, long total) throws Exception {
+                    System.out.printf("%s: %d / %d (+%d)%n", path, current, total, amount);
+                    shuffleInfo.shuffleSize -= amount;
+                }
+
+                @Override
                 public void operationComplete(ChannelFuture future) {
 			System.out.println("done FileRegion");
                     region.releaseExternalResources();

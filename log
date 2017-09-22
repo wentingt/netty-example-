@@ -4,40 +4,100 @@
 [INFO] Building netty-example 1.0-SNAPSHOT
 [INFO] ------------------------------------------------------------------------
 [INFO] 
-[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ netty-example ---
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] skip non existing resourceDirectory /Users/wentingt/netty-http/src/main/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:2.0.2:compile (default-compile) @ netty-example ---
-[INFO] Compiling 16 source files to /Users/wentingt/netty-http/target/classes
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ netty-example ---
-[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-[INFO] skip non existing resourceDirectory /Users/wentingt/netty-http/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:2.0.2:testCompile (default-testCompile) @ netty-example ---
-[INFO] Nothing to compile - all classes are up to date
-[INFO] 
-[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ netty-example ---
-[INFO] Surefire report directory: /Users/wentingt/netty-http/target/surefire-reports
-
--------------------------------------------------------
- T E S T S
--------------------------------------------------------
-Running de.uulm.vs.SampleTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 sec
-
-Results :
-
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-
-[INFO] 
-[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ netty-example ---
-[INFO] Building jar: /Users/wentingt/netty-http/target/netty-example-1.0-SNAPSHOT.jar
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 2.424 s
-[INFO] Finished at: 2017-09-02T22:16:45-04:00
-[INFO] Final Memory: 16M/173M
-[INFO] ------------------------------------------------------------------------
+[INFO] --- exec-maven-plugin:1.6.0:java (default-cli) @ netty-example ---
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+MessageReceived
+/Users/wentingt/Desktop/netty-example-/x.txt
+HttpResponse:
+DefaultHttpResponse(chunked: false)
+HTTP/1.1 200 OK
+Content-Length: 5368714120
+Content-Type: text/plain
+Date: Thu, 21 Sep 2017 19:03:16 GMT
+Expires: Thu, 21 Sep 2017 19:04:16 GMT
+Cache-Control: private, max-age=60
+Last-Modified: Thu, 21 Sep 2017 19:03:16 GMT
+id: 0
+jobId: 0 , mapId: 0 , reduceId: 0
+mapHostName: localhost , reduceHostName: localhost
+shuffleSize: 5368714120 , shuffleRate: 1024
+ByteBuffer:
+BigEndianHeapChannelBuffer(ridx=0, widx=1000, cap=1000)
+done ByteBuffer
+FileRegion:
+Custom
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+done FileRegion
+3.3744243368950343E8
+id: 0
+jobId: 0 , mapId: 0 , reduceId: 0
+mapHostName: localhost , reduceHostName: localhost
+shuffleSize: 5368714120 , shuffleRate: 4096
+ByteBuffer:
+BigEndianHeapChannelBuffer(ridx=0, widx=1000, cap=1000)
+done ByteBuffer
+FileRegion:
+Custom
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+done FileRegion
+4.348893576346699E8
+id: 0
+jobId: 0 , mapId: 0 , reduceId: 0
+mapHostName: localhost , reduceHostName: localhost
+shuffleSize: 5368714120 , shuffleRate: 6144
+ByteBuffer:
+BigEndianHeapChannelBuffer(ridx=0, widx=1000, cap=1000)
+done ByteBuffer
+FileRegion:
+Custom
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+done FileRegion
+3.771485156304882E8
+id: 0
+jobId: 0 , mapId: 0 , reduceId: 0
+mapHostName: localhost , reduceHostName: localhost
+shuffleSize: 5368714120 , shuffleRate: 9216
+ByteBuffer:
+BigEndianHeapChannelBuffer(ridx=0, widx=1000, cap=1000)
+done ByteBuffer
+FileRegion:
+Custom
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end
+done FileRegion
+5.312923424047501E8
+id: 0
+jobId: 0 , mapId: 0 , reduceId: 0
+mapHostName: localhost , reduceHostName: localhost
+shuffleSize: 5368714120 , shuffleRate: 11264
+ByteBuffer:
+BigEndianHeapChannelBuffer(ridx=0, widx=1000, cap=1000)
+done ByteBuffer
+FileRegion:
+Custom
+*** send and receive start
+*** send and receive end
+*** send and receive start
+*** send and receive end

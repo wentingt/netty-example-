@@ -32,9 +32,15 @@ import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 import javax.net.ssl.SSLEngine;
 import ha.ha.ha.example.securechat.SecureChatSslContextFactory;
 import org.jboss.netty.handler.ssl.SslHandler;
-*/ 
+*/
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class HttpStaticFileServerPipelineFactory implements ChannelPipelineFactory {
+	private final Map<ShuffleId, ShuffleInfo> shuffleInfoMap;
+	public HttpStaticFileServerPipelineFactory(Map<ShuffleId, ShuffleInfo> shuffleInfoMap) {
+		this.shuffleInfoMap = shuffleInfoMap;
+	}
     public ChannelPipeline getPipeline() throws Exception {
         // Create a default pipeline implementation.
         ChannelPipeline pipeline = pipeline();
@@ -51,7 +57,7 @@ public class HttpStaticFileServerPipelineFactory implements ChannelPipelineFacto
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
 
-        pipeline.addLast("handler", new HttpStaticFileServerHandler());
+        pipeline.addLast("handler", new HttpStaticFileServerHandler(shuffleInfoMap));
         return pipeline;
     }
 /////////////////////

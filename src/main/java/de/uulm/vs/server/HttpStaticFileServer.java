@@ -16,11 +16,18 @@
 //package org.jboss.netty.example.http.file;
 package de.uulm.vs.server;
 
+import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
+import java.util.LinkedHashMap;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.io.IOException;
+//import java.util.concurrent;
 
 public class HttpStaticFileServer {
 
@@ -42,13 +49,15 @@ public class HttpStaticFileServer {
                         Executors.newCachedThreadPool()));
 
         // Set up the event pipeline factory.
-        bootstrap.setPipelineFactory(new HttpStaticFileServerPipelineFactory());
+        bootstrap.setPipelineFactory(new HttpStaticFileServerPipelineFactory(shuffleInfoMap));
 
         // Bind and start to accept incoming connections.
         bootstrap.bind(new InetSocketAddress(port));
     }
 
     public static void main(String[] args) {
+        new Fetch(shuffleInfoMap).start();
+
         int port;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
@@ -57,4 +66,81 @@ public class HttpStaticFileServer {
         }
         new HttpStaticFileServer(port).run();
     }
+
+    private static final Map<ShuffleId, ShuffleInfo> shuffleInfoMap = new LinkedHashMap<ShuffleId, ShuffleInfo>();
+    //private final Map<ShuffleId, ShuffleRate> shuffleRateMap = new LinkedHashMap<ShuffleId, ShuffleRate>();
+}
+
+class ShuffleId {
+    static int Id = 0;
+    int id;
+    public ShuffleId() {
+        this.id = this.Id;
+        this.Id += 1;
+    }
+    public void print() {
+        System.out.println("id: " + this.id);
+    }
+}
+
+class ShuffleInfo{
+    int jobId;
+    int mapId;
+    int reduceId;
+    String mapHostName;
+    String reduceHostName;
+    long shuffleSize;
+    long shuffleRate;
+    public ShuffleInfo() {
+        this.shuffleRate = 1024 * 1024;
+    }
+    public void print() {
+        System.out.println("jobId: " + jobId + " , mapId: " + mapId + " , reduceId: " + reduceId);
+        System.out.println("mapHostName: " + mapHostName + " , reduceHostName: " + reduceHostName);
+        System.out.println("shuffleSize: " + shuffleSize + " , shuffleRate: " + shuffleRate);
+    }
+}
+
+class Fetch extends Thread {
+    private static final long SLEEP_TIME = 1000;
+    private volatile boolean stopped = false;
+    private final Map<ShuffleId, ShuffleInfo> shuffleInfoMap;
+    // constructor
+    public Fetch(Map<ShuffleId, ShuffleInfo> shuffleInfoMap) {
+        this.shuffleInfoMap = shuffleInfoMap;
+    }
+    @Override
+    public void run() {
+        try {
+            while (!stopped && !Thread.currentThread().isInterrupted()) {
+                try {
+                    // send and receive
+                    System.out.println("*** send and receive start");
+                    connectGaia(); // add synchronization later
+                    System.out.println("*** send and receive end");
+                    // sleep
+                    if (!Thread.currentThread().isInterrupted()) {
+                        Thread.sleep(SLEEP_TIME);
+                    }
+                } catch (InterruptedException ie) {
+                    return;
+                }
+            }
+        //} catch (InterruptedException ie) {
+          //  return;
+        } catch (Throwable t) {
+            return;
+        }
+    }
+    protected void connectGaia() throws IOException, InterruptedException {
+            //throw new InterruptedIOException("test Interrupted");
+        for (Map.Entry<ShuffleId, ShuffleInfo> e: shuffleInfoMap.entrySet()) {
+            //e.getKey().print();
+            e.getValue().print();
+            ShuffleInfo shuffleInfo = e.getValue();
+            shuffleInfo.shuffleRate += 1024;
+        }
+    }
+    // may need
+    public void shutdown() {}
 }
