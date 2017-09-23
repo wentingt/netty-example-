@@ -69,8 +69,8 @@ public class DiscardClient {
         // Set up the pipeline factory.
         bootstrap.setPipelineFactory(new DiscardClientPipelineFactory());
 
-	bootstrap.setOption("tcpNoDelay", true);
-	        bootstrap.setOption("keepAlive", true);
+	    bootstrap.setOption("tcpNoDelay", true);
+        bootstrap.setOption("keepAlive", true);
         // Start the connection attempt.
         ChannelFuture future = bootstrap.connect(new InetSocketAddress(host, port));
 
@@ -80,6 +80,6 @@ public class DiscardClient {
         // Shut down thread pools to exit.
         bootstrap.releaseExternalResources();
 
-	return 0;
+	    return 0;
     }
 }
