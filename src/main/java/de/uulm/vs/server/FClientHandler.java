@@ -102,7 +102,7 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
             ShuffleInfo shuffleInfo = entry.getValue();
             shuffleInfo.shuffleRate += 1024;
         }
-        
+
         sendRequest(e.getChannel());
         //ch.close();
     }

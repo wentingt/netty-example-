@@ -1,40 +1,19 @@
 package de.uulm.vs.server;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.io.IOException;
-import java.net.*;
-import java.io.*;
-
-import org.jboss.netty.buffer.*;
-import org.jboss.netty.channel.*;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
-import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-import static org.jboss.netty.handler.codec.http.HttpMethod.*;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-
-import org.jboss.netty.handler.codec.http.HttpChunk;
-import org.jboss.netty.handler.codec.http.HttpMessage;
-import static org.jboss.netty.channel.Channels.*;
-import org.jboss.netty.buffer.ChannelBuffer;
-
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
-import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
-import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
-import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 
-import com.google.common.util.concurrent.RateLimiter;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.concurrent.Executors;
+
+import static org.jboss.netty.channel.Channels.pipeline;
 
 class FClientPipelineFactory implements ChannelPipelineFactory {
     private final Map<ShuffleId, ShuffleInfo> shuffleInfoMap;
@@ -52,6 +31,7 @@ class FClientPipelineFactory implements ChannelPipelineFactory {
         return pipeline;
     }
 }
+
 class Fetch extends Thread {
     private static final long SLEEP_TIME = 1000;
     private volatile boolean stopped = false;

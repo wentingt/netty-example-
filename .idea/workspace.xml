@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="71841f75-efea-4caf-80e5-2aef21affbe5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandler.java" afterPath="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServer.java" afterPath="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServer.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/Fetch.java" afterPath="" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,18 +14,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Fetch.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/Fetch.java">
+      <file leaf-file-name="FClientPipelineFactory.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientPipelineFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="795">
-              <caret line="53" column="1" lean-forward="false" selection-start-line="53" selection-start-column="1" selection-end-line="53" selection-end-column="1" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#1657#1658#0" expanded="true" />
-                <element signature="e#1709#1710#0" expanded="true" />
-                <element signature="e#4701#4702#0" expanded="true" />
-                <element signature="e#4753#4754#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="270">
+              <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -35,7 +27,7 @@
       <file leaf-file-name="HttpStaticFileServer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="235">
+            <state relative-caret-position="1215">
               <caret line="100" column="38" lean-forward="false" selection-start-line="100" selection-start-column="38" selection-end-line="100" selection-end-column="38" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -44,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FClientHandler.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="FClientHandler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="381">
-              <caret line="104" column="8" lean-forward="true" selection-start-line="104" selection-start-column="8" selection-end-line="104" selection-end-column="8" />
+            <state relative-caret-position="202">
+              <caret line="104" column="0" lean-forward="false" selection-start-line="104" selection-start-column="0" selection-end-line="104" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1691#1692#0" expanded="true" />
@@ -114,10 +106,12 @@
         <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/Gserver/GServer.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/client/DiscardClient.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/Gserver/GServerHandler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/Fetch.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/Gserver/GServerPipelineFactory.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServer.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/Fetch.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandlerPipeline.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientPipelineFactory.java" />
       </list>
     </option>
   </component>
@@ -213,6 +207,16 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="vs" type="462c0819:PsiDirectoryNode" />
               <item name="server" type="462c0819:PsiDirectoryNode" />
+              <item name="FClientPipelineFactory.java" type="529ef68f:ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
+            </path>
+            <path>
+              <item name="netty-example" type="b2602c69:ProjectViewProjectNode" />
+              <item name="netty-example-" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="vs" type="462c0819:PsiDirectoryNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
               <item name="HttpStaticFileServer.java" type="529ef68f:ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </path>
             <path>
@@ -250,6 +254,7 @@
       <recent name="de.uulm.vs.server" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/de/uulm/vs/server" />
       <recent name="$PROJECT_DIR$/src/main/java/de/uulm/vs/Gserver" />
     </key>
   </component>
@@ -590,23 +595,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/Fetch.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="53" column="1" lean-forward="false" selection-start-line="53" selection-start-column="1" selection-end-line="53" selection-end-column="1" />
+        <state relative-caret-position="202">
+          <caret line="104" column="0" lean-forward="false" selection-start-line="104" selection-start-column="0" selection-end-line="104" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1657#1658#0" expanded="true" />
-            <element signature="e#1709#1710#0" expanded="true" />
-            <element signature="e#4701#4702#0" expanded="true" />
-            <element signature="e#4753#4754#0" expanded="true" />
+            <element signature="e#1691#1692#0" expanded="true" />
+            <element signature="e#1743#1744#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/HttpStaticFileServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
+        <state relative-caret-position="1215">
           <caret line="100" column="38" lean-forward="false" selection-start-line="100" selection-start-column="38" selection-end-line="100" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -614,15 +617,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/Fetch.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="381">
-          <caret line="104" column="8" lean-forward="true" selection-start-line="104" selection-start-column="8" selection-end-line="104" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1691#1692#0" expanded="true" />
-            <element signature="e#1743#1744#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-504">
+          <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientHandlerPipeline.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/uulm/vs/server/FClientPipelineFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
