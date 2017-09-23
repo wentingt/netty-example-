@@ -71,11 +71,7 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         System.out.println("FClientHandler::channelConnected");
-        HttpRequest request = new DefaultHttpRequest(HTTP_1_1, POST, "shuffleRate");
-        Channel ch = e.getChannel();
-        ch.write(request);
-        //ch.write((ChannelBuffer) shuffleInfoMap);
-        System.out.println(request);
+        sendRequest(e.getChannel());
     }
 /*
     @Override
@@ -84,6 +80,13 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
         generateTraffic(e);
     }
 */
+    void sendRequest(Channel ch) {
+        HttpRequest request = new DefaultHttpRequest(HTTP_1_1, POST, "shuffleRate");
+        ch.write(request);
+        //ch.write((ChannelBuffer) shuffleInfoMap);
+        System.out.println(request);
+    }
+
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         // Server is supposed to send nothing.  Therefore, do nothing.
@@ -99,14 +102,9 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
             ShuffleInfo shuffleInfo = entry.getValue();
             shuffleInfo.shuffleRate += 1024;
         }
-
-        ch.close();
-    }
-
-    @Override
-    public void writeComplete(ChannelHandlerContext ctx, WriteCompletionEvent e) throws Exception {
-        //transferredBytes.addAndGet(e.getWrittenAmount());
-        //e.getChannel().close();
+        
+        sendRequest(e.getChannel());
+        //ch.close();
     }
 
     @Override
@@ -118,26 +116,4 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
                 e.getCause());
         e.getChannel().close();
     }
-/*
-    private void generateTraffic(ChannelStateEvent e) {
-        // Keep generating traffic until the channel is unwritable.
-        // A channel becomes unwritable when its internal buffer is full.
-        // If you keep writing messages ignoring this property,
-        // you will end up with an OutOfMemoryError.
-        Channel channel = e.getChannel();
-        while (channel.isWritable()) {
-            ChannelBuffer m = nextMessage();
-            if (m == null) {
-                break;
-            }
-
-//	    rateLimiter.acquire(content.length);
-            channel.write(m);
-        }
-    }
-
-    private ChannelBuffer nextMessage() {
-        return ChannelBuffers.wrappedBuffer(content);
-    }
-*/
 }
