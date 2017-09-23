@@ -24,11 +24,12 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
-import org.jboss.netty.handler.codec.string.StringDecoder;
+import org.jboss.netty.handler.codec.*;
+import org.jboss.netty.handler.codec.frame.*;
 import org.jboss.netty.handler.codec.string.StringEncoder;
 import org.jboss.netty.handler.stream.ChunkedWriteHandler;
-
-import static org.jboss.netty.channel.Channels.pipeline;
+import org.jboss.netty.channel.*;
+import static org.jboss.netty.channel.Channels.*;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.buffer.ChannelBuffer;
 // Uncomment the following lines if you want HTTPS
@@ -49,12 +50,9 @@ public class GServerPipelineFactory implements ChannelPipelineFactory {
         engine.setUseClientMode(false);
         pipeline.addLast("ssl", new SslHandler(engine));
 	*/
-		pipeline.addLast("sd", new StringEncoder());
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("aggregator", new HttpChunkAggregator(65536));
 		pipeline.addLast("encoder", new HttpResponseEncoder());
-		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-
 		pipeline.addLast("handler", new GServerHandler());
 		return pipeline;
 	}

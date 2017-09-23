@@ -144,7 +144,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelUpstreamHandler {
 
     public int headerLength = 1000;
     public long fileLength = 1024 * 1024 * 1024;
-    public int num = 5;
+    public int num = 50;
 
 
     private RateLimiter rateLimiter;
@@ -252,7 +252,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelUpstreamHandler {
 	    shuffleInfo.shuffleSize = contentLength;
         this.shuffleInfoMap.put(shuffleId, shuffleInfo);
 
-        rateLimiter = RateLimiter.create((double) shuffleInfo.shuffleRate / (double) CHUNKSIZE);
+        rateLimiter = RateLimiter.create(RATE); // to be changed
 
 for (int k = 0; k < num; ++k) {
     for (Map.Entry<ShuffleId, ShuffleInfo> entry: shuffleInfoMap.entrySet()) {

@@ -63,7 +63,7 @@ public class HttpStaticFileServerPipelineFactory implements ChannelPipelineFacto
 /////////////////////
 	public class myChunkedWriteHandler extends ChunkedWriteHandler {
     		public static final int CHUNKSIZE = 1024 * 64; // 1kB
-     		double permitsPerSecond = 1024 * 1024 * 1024 / 8; // rate (byte / second)
+     		double permitsPerSecond = 1024 * 1024 * 1024; // rate (byte / second)
       		private final RateLimiter rateLimiter = RateLimiter.create(permitsPerSecond);
 
 		@Override

@@ -6,7 +6,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
+import org.jboss.netty.handler.codec.http.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,11 +22,9 @@ class FClientPipelineFactory implements ChannelPipelineFactory {
     }
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = pipeline();
-//        pipeline.addLast("decoder", new myHttpResponseDecoder());
-//        pipeline.addLast("aggregator", new myHttpChunkAggregator(65536));
+        pipeline.addLast("decoder", new HttpResponseDecoder());
+        pipeline.addLast("aggregator", new HttpChunkAggregator(65536));
         pipeline.addLast("encoder", new HttpRequestEncoder());
-//        pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-
         pipeline.addLast("handler", new FClientHandler(shuffleInfoMap));
         return pipeline;
     }

@@ -143,7 +143,7 @@ class ShuffleInfo{
     long shuffleSize;
     long shuffleRate;
     public ShuffleInfo() {
-        this.shuffleRate = 1024 * 1024;
+        this.shuffleRate = 1024 * 1024 * 1024;
     }
     public void print() {
         System.out.println("jobId: " + jobId + " , mapId: " + mapId + " , reduceId: " + reduceId);

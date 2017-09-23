@@ -17,10 +17,32 @@ package de.uulm.vs.server;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
+import com.google.common.util.concurrent.RateLimiter;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.FileRegion;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
+import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jboss.netty.channel.ChannelEvent;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelState;
+import static org.jboss.netty.handler.codec.http.HttpHeaders.*;
+import static org.jboss.netty.handler.codec.http.HttpMethod.*;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
+import static org.jboss.netty.handler.codec.http.HttpVersion.*;
+import java.lang.Thread;
+
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.*;
@@ -47,16 +69,9 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
     }
     private static final Logger logger = Logger.getLogger(
             FClientHandler.class.getName());
-//    private final AtomicLong transferredBytes = new AtomicLong();
-//    private final byte[] content;
-/*
-	double permitsPerSecond = 50000;
-    private final RateLimiter rateLimiter = RateLimiter.create(permitsPerSecond);
-    public long getTransferredBytes() {
-        return transferredBytes.get();
-    }
 
-*/
+    private RateLimiter rateLimiter = RateLimiter.create(0.2);
+
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof ChannelStateEvent) {
@@ -70,7 +85,7 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
     }
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        System.out.println("FClientHandler::channelConnected");
+        System.out.println("FClientHandler::channelConnected -->");
         sendRequest(e.getChannel());
     }
 /*
@@ -81,26 +96,39 @@ public class FClientHandler extends SimpleChannelUpstreamHandler {
     }
 */
     void sendRequest(Channel ch) {
+        rateLimiter.acquire();
+        ChannelBuffer content = ChannelBuffers.copiedBuffer(shuffleInfoMap.toString().getBytes());
+
         HttpRequest request = new DefaultHttpRequest(HTTP_1_1, POST, "shuffleRate");
+        request.setChunked(true);
+        setContentLength(request, content.capacity());
         ch.write(request);
-        //ch.write((ChannelBuffer) shuffleInfoMap);
-        System.out.println(request);
+System.out.println("[ request sent");
+
+        HttpChunk chunk = new DefaultHttpChunk(content);
+        ch.write(chunk);
+System.out.println("[ chunk sent");
+
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         // Server is supposed to send nothing.  Therefore, do nothing.
-        System.out.println("FClientHandler::messageReceived");
         Channel ch = e.getChannel();
-        ChannelBuffer buf = (ChannelBuffer) e.getMessage();
+        System.out.println("FClientHandler::messageReceived -->");
 
-        while (buf.readable()) {
-            System.out.print((char) buf.readByte());
-        }
-        System.out.println(buf);
+        HttpResponse response = (HttpResponse) e.getMessage();
+        System.out.println(response);
+        System.out.println(response.getContent());
+
+        // update shuffleRate
         for (Map.Entry<ShuffleId, ShuffleInfo> entry: shuffleInfoMap.entrySet()) {
             ShuffleInfo shuffleInfo = entry.getValue();
-            shuffleInfo.shuffleRate += 1024;
+            if (shuffleInfo.shuffleRate == 1024 * 1024 * 1024) {
+                shuffleInfo.shuffleRate = 1024 * 1024;
+            } else {
+                shuffleInfo.shuffleRate = 1024 * 1024 * 1024 / 8;
+            }
         }
 
         sendRequest(e.getChannel());

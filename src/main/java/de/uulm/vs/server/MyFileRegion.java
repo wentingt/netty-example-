@@ -143,7 +143,7 @@ public class MyFileRegion extends DefaultFileRegion {
                 //rateLimiter.acquire(trans);
             }
 
-            System.err.println(rateLimiter.getRate());
+            // System.err.println(rateLimiter.getRate());
 
             rateLimiter.acquire();
             rateLimiter.setRate((double) shuffleInfo.shuffleRate / (double) CHUNKSIZE);

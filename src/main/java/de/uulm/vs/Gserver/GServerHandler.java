@@ -22,10 +22,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.*;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.stream.ChunkedFile;
 import org.jboss.netty.util.CharsetUtil;
@@ -99,16 +96,8 @@ public class GServerHandler extends SimpleChannelUpstreamHandler {
     private static final Logger logger = Logger.getLogger(
             HttpStaticFileServerHandler.class.getName());
 
-    public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
-    public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
-    public static final int HTTP_CACHE_SECONDS = 60;
-
     @Override
-    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-    }
-
-	@Override
-	public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof ChannelStateEvent) {
             if (((ChannelStateEvent) e).getState() != ChannelState.INTEREST_OPS) {
                 logger.info(e.toString());
@@ -118,10 +107,17 @@ public class GServerHandler extends SimpleChannelUpstreamHandler {
         // Let SimpleChannelHandler call actual event handler methods below.
         super.handleUpstream(ctx, e);
     }
+
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-	    System.out.println("MessageReceived");
+        Channel ch = e.getChannel();
+        System.out.println("GServerHandler::MessageReceived -->");
+
         HttpRequest request = (HttpRequest) e.getMessage();
+        System.out.println(request);
+        System.out.println(request.getContent());
+
+/* process shuffleInfo
         if (request.getMethod() != POST) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return;
@@ -143,22 +139,7 @@ public class GServerHandler extends SimpleChannelUpstreamHandler {
             return;
         }
 
-        System.out.println(path);
-        // Cache Validation
-        String ifModifiedSince = request.getHeader(IF_MODIFIED_SINCE);
-        if (ifModifiedSince != null && ifModifiedSince.length() != 0) {
-            SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-            Date ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince);
-
-            // Only compare up to the second because the datetime format we send to the client does
-            // not have milliseconds
-            long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
-            long fileLastModifiedSeconds = file.lastModified() / 1000;
-            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
-                sendNotModified(ctx);
-                return;
-            }
-        }
+        //System.out.println(path);
 
         RandomAccessFile raf;
         try {
@@ -168,36 +149,16 @@ public class GServerHandler extends SimpleChannelUpstreamHandler {
             return;
         }
         long contentLength = raf.length();
+*/
+
+        String shuffleRate = "88";
+        ChannelBuffer content = ChannelBuffers.wrappedBuffer(shuffleRate.getBytes());
 
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-        setContentLength(response, contentLength);
-        setContentTypeHeader(response, file);
-        setDateAndCacheHeaders(response, file);
-
-        Channel ch = e.getChannel();
-
-        // Write the initial line and the header.
+        setContentLength(response, content.capacity());
+        response.setContent(content);
         ch.write(response);
-	    System.out.println("HttpResponse:");
-	    System.out.println(response);
-
-        final FileRegion region =
-                new DefaultFileRegion(raf.getChannel(), 0, contentLength);
-
-        ChannelFuture wF = ch.write(region);
-        wF.addListener(new ChannelFutureProgressListener() {
-            @Override
-            public void operationProgressed(ChannelFuture future,
-                                            long amount, long current, long total) throws Exception {
-               // System.out.printf("%s: %d / %d (+%d)%n", path, current, total, amount);
-            }
-            @Override
-            public void operationComplete(ChannelFuture future) {
-                System.out.println("done FileRegion");
-                region.releaseExternalResources();
-            }
-        });
-
+        System.out.println("[ response sent");
     }
 
     @Override
@@ -234,8 +195,8 @@ public class GServerHandler extends SimpleChannelUpstreamHandler {
         // Simplistic dumb security check.
         // You will have to do something serious in the production environment.
         if (uri.contains(File.separator + '.') ||
-            uri.contains('.' + File.separator) ||
-            uri.startsWith(".") || uri.endsWith(".")) {
+                uri.contains('.' + File.separator) ||
+                uri.startsWith(".") || uri.endsWith(".")) {
             return null;
         }
 
@@ -254,68 +215,4 @@ public class GServerHandler extends SimpleChannelUpstreamHandler {
         ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    /**
-     * When file timestamp is the same as what the browser is sending up, send a "304 Not Modified"
-     *
-     * @param ctx
-     *            Context
-     */
-    private static void sendNotModified(ChannelHandlerContext ctx) {
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, NOT_MODIFIED);
-        setDateHeader(response);
-
-        // Close the connection as soon as the error message is sent.
-        ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
-    }
-
-    /**
-     * Sets the Date header for the HTTP response
-     *
-     * @param response
-     *            HTTP response
-     */
-    private static void setDateHeader(HttpResponse response) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-        dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
-
-        Calendar time = new GregorianCalendar();
-        response.setHeader(DATE, dateFormatter.format(time.getTime()));
-    }
-
-    /**
-     * Sets the Date and Cache headers for the HTTP Response
-     *
-     * @param response
-     *            HTTP response
-     * @param fileToCache
-     *            file to extract content type
-     */
-    private static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-        dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
-
-        // Date header
-        Calendar time = new GregorianCalendar();
-        response.setHeader(DATE, dateFormatter.format(time.getTime()));
-
-        // Add cache headers
-        time.add(Calendar.SECOND, HTTP_CACHE_SECONDS);
-        response.setHeader(EXPIRES, dateFormatter.format(time.getTime()));
-        response.setHeader(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
-        response.setHeader(
-                LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
-    }
-
-    /**
-     * Sets the content type header for the HTTP Response
-     *
-     * @param response
-     *            HTTP response
-     * @param file
-     *            file to extract content type
-     */
-    private static void setContentTypeHeader(HttpResponse response, File file) {
-        MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-        response.setHeader(CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
-    }
 }
